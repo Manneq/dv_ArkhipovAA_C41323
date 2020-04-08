@@ -14,26 +14,23 @@ let year = '2000';
 
 // Эти переменные понадобятся в Part 2 и 3
 const params = ['child-mortality', 'fertility-rate', 'gdp', 'life-expectancy', 'population'];
-const colors = ['aqua', 'lime', 'gold', 'hotpink']
+const colors = ['aqua', 'lime', 'gold', 'hotpink'];
 
 // Создаем шкалы для осей и точек
 const x = d3.scaleLinear().range([margin*2, width-margin]);
 const y = d3.scaleLinear().range([height-margin, margin]);
-
-
 
 // Создаем наименования для шкал и помещаем их на законные места сохраняя переменные
 const xLable = svg.append('text').attr('transform', `translate(${width/2}, ${height})`);
 const yLable = svg.append('text').attr('transform', `translate(${margin/2}, ${height/2}) rotate(-90)`);
 
 // Part 1: по аналогии со строчками сверху задайте атрибуты 'transform' чтобы переместить оси 
-const xAxis = svg.append('g') // .attr('transform', ... 
-const yAxis = svg.append('g')// .attr('transform', ...
-
+const xAxis = svg.append('g').attr('transform', `translate(0, ${height * 0.94})`)
+const yAxis = svg.append('g').attr('transform', `translate(${margin * 2}, 0)`)
 
 // Part 2: Здесь можно создать шкалы для цвета и радиуса объектов
-// const color = d3.scaleOrdinal()...
-// const r = d3.scaleSqrt()...
+const color = d3.scaleOrdinal().range(colors)
+const r = d3.scaleSqrt().range([2, 25])
 
 // Part 2: для элемента select надо задать options http://htmlbook.ru/html/select
 // и установить selected для дефолтного значения
@@ -41,10 +38,8 @@ const yAxis = svg.append('g')// .attr('transform', ...
 // d3.select('#radius').selectAll('option')
 //         ...
 
-
 // Part 3: то же что делали выше, но для осей
 // ...
-
 
 loadData().then(data => {
     // сюда мы попадаем после загружки данных и можем для начала на них посмортеть:
@@ -62,7 +57,8 @@ loadData().then(data => {
     d3.select('#radius').on('change', newRadius);
 
     // Part 3: подпишемся на изменения селектороы параметров осей
-    // ...
+    d3.select('#x').on('change', newX);
+    d3.select('#y').on('change', newY);
 
     // изменяем значение переменной и обновляем график
     function newYear(){
@@ -72,7 +68,20 @@ loadData().then(data => {
 
     function newRadius(){
         // Part 2: по аналогии с newYear
+        radius = this.value;
+        updateChart()
     }
+
+    function newX(){
+        xParam = this.value;
+        updateChart()
+    }
+
+    function newY(){
+        yParam = this.value;
+        updateChart()
+    }
+
     function updateChart(){
         // Обновляем все лейблы в соответствии с текущем состоянием
         xLable.text(xParam);
@@ -85,17 +94,31 @@ loadData().then(data => {
         x.domain([d3.min(xRange), d3.max(xRange)]);
 
         // и вызовим функцию для ее отрисовки
-        //xAxis.call(d3.axisBottom(x));    
+        xAxis.call(d3.axisBottom(x));   
 
         // Part 1: нужно сделать то же самое и для 'y'
-        // ...
+        let yRange = data.map(d => +d[yParam][year])
+        y.domain([d3.min(yRange), d3.max(yRange)])
+        yAxis.call(d3.axisLeft(y))
         
         // Part 2: теперь у нас есть еще одна не постоянная шкала
-        // ...
+        let radiusRange = data.map(d => +d[radius][year]);
+        r.domain([d3.min(radiusRange), d3.max(radiusRange)])
 
         // Part 1, 2: создаем и обновляем состояние точек
-        // svg.selectAll('circle').data(data)
-        //     ...
+        svg.selectAll('circle').data(data)
+            .enter()
+            .append('circle')
+            .attr("cx", d => x(d[xParam][year]))
+            .attr("cy", d => y(d[yParam][year]))
+            .attr("r", d => r(d[radius][year]))
+            .attr("fill", d => color(d['region']));
+
+        svg.selectAll('circle').data(data)
+            .attr("cx", d => x(d[xParam][year]))
+            .attr("cy", d => y(d[yParam][year]))
+            .attr("r", d => r(d[radius][year]))
+            .attr("fill", d => color(d['region']));
     }
 
     // рисуем график в первый раз
@@ -111,6 +134,7 @@ async function loadData() {
         'life-expectancy': await d3.csv('data/life_expect.csv'),
         'fertility-rate': await d3.csv('data/tfr.csv')
     };
+
     const data = population.map(d=>{
         return {
             geo: d.geo,
@@ -121,5 +145,6 @@ async function loadData() {
             
         }
     })
+    
     return data
 }
