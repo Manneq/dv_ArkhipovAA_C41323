@@ -30,7 +30,7 @@ const yAxis = svg.append('g').attr('transform', `translate(${margin * 2}, 0)`)
 
 // Part 2: Здесь можно создать шкалы для цвета и радиуса объектов
 const color = d3.scaleOrdinal().range(colors)
-const r = d3.scaleSqrt().range([2, 25])
+const r = d3.scaleSqrt().range([1, 10])
 
 // Part 2: для элемента select надо задать options http://htmlbook.ru/html/select
 // и установить selected для дефолтного значения
