@@ -47,22 +47,22 @@
                 
                 // TODO Part 3: тут можно создать svg внутри #menu и добавить туда легенду
                 // ...
-                const legend = d3.select('#menu').append('svg')
-                    .attr('width', 200).attr("height", 40)
-                let gradient = legend.append('defs')
-                    .append("svg:linearGradient")
-                    .attr("id", "gradient");
+                //const legend = d3.select('#menu').append('svg')
+                    //.attr('width', 200).attr("height", 40)
+                //let gradient = legend.append('defs')
+                    //.append("svg:linearGradient")
+                    //.attr("id", "gradient");
 
-                gradient.append('stop').attr('offset', '0%')
-                    .style("stop-color", colors[0]);
-                gradient.append('stop').attr('offset', '100%')
-                    .style("stop-color", colors[1]);
+                //gradient.append('stop').attr('offset', '0%')
+                    //.style("stop-color", colors[0]);
+                //gradient.append('stop').attr('offset', '100%')
+                    //.style("stop-color", colors[1]);
 
-                legend.append('rect')
-                    .attr('width', 200).attr("height", 20)
-                    .style("fill", "url(#gradient)");
+                //legend.append('rect')
+                    //.attr('width', 200).attr("height", 20)
+                    //.style("fill", "url(#gradient)");
 
-                const axis = legend.append('g').attr('id','axis').attr('transform', 'translate(0,20)');
+                //const axis = legend.append('g').attr('id','axis').attr('transform', 'translate(0,20)');
 
                 // вызываем update() при изменении param
                 d3.selectAll('input[name="param"]').on('change',function(){
